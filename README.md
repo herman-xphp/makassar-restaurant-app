@@ -65,48 +65,85 @@ lib/
 └── utils/                  # Fungsi bantuan umum
 ```
 
-## 🚀 Instalasi & Cara Menjalankan
+## 🚀 Setup & Instalasi
 
-### Prasyarat
-- Flutter SDK terinstall.
-- Backend API sudah berjalan (Localhost atau Network).
+Agar aplikasi dapat berjalan dengan baik, Anda perlu menjalankan **Backend API** terlebih dahulu, kemudian menjalankan **Aplikasi Flutter**.
 
-### 1. Konfigurasi Endpoint (PENTING)
-Agar aplikasi bisa berjalan di Device Fisik (HP) atau Emulator, Anda perlu mengkonfigurasi IP Address backend.
+### TAHAP 1: Setup Backend API (Laravel)
 
-Buka file `lib/core/config.dart`:
+Sebelum menjalankan aplikasi mobile, pastikan backend server sudah aktif.
+
+**1. Clone Repository API**
+```bash
+git clone https://github.com/herman-xphp/makassar-restaurant-api.git
+cd makassar-restaurant-api
+```
+
+**2. Install Dependencies**
+```bash
+composer install
+```
+
+**3. Setup Database & Environment**
+```bash
+cp .env.example .env
+php artisan key:generate
+# Pastikan konfigurasi database di .env sudah sesuai
+php artisan migrate --seed
+```
+
+**4. Jalankan Server API**
+Penyebab utama error koneksi biasanya karena server tidak bisa diakses dari jaringan. Jalankan server dengan host `0.0.0.0` agar bisa diakses oleh Device Fisik & Emulator.
+
+```bash
+php artisan serve --host 0.0.0.0 --port 8000
+```
+> Catat **IPv4 Address** komputer Anda (contoh: `192.168.1.10`), ini akan dipakai di Tahap 2.
+
+---
+
+### TAHAP 2: Setup Aplikasi Mobile (Flutter)
+
+**1. Clone Repository App**
+```bash
+git clone https://github.com/herman-xphp/makassar-restaurant-app.git
+cd makassar-restaurant-app
+```
+
+**2. Integrasi API ke Flutter**
+Agar aplikasi Flutter bisa "berbicara" dengan Backend, Anda harus memasukkan IP Address komputer Anda.
+
+Buka file `lib/core/config.dart` dan edit `baseUrl`:
 
 ```dart
 class Config {
-  // GANTI dengan IP Address Laptop/PC Anda
-  // Cara cek IP: 
-  // - Windows: buka cmd ketik `ipconfig` -> IPv4 Address
-  // - Mac/Linux: buka terminal ketik `ifconfig` -> inet
+  // GANTI 192.168.1.XX dengan IP Address komputer Anda yang didapat dari Tahap 1
+  // Contoh: 'http://192.168.1.10:8000'
   
   static const String baseUrl = 'http://192.168.1.XX:8000'; 
 }
 ```
 
-> **Catatan:** Pastikan HP/Device dan Laptop berada dalam jaringan WiFi yang sama.
+> **PENTING:** 
+> - Laptop (Server API) dan HP (Aplikasi Flutter) **HARUS** terhubung ke jaringan WiFi yang **SAMA**.
+> - Matikan Firewall/Antivirus jika koneksi terblokir.
 
-### 2. Install Dependencies
-Jalankan perintah ini di terminal project:
-
+**3. Install Dependencies**
 ```bash
 flutter pub get
 ```
 
-### 3. Jalankan Aplikasi
+**4. Jalankan Aplikasi**
 
-**Untuk Emulator:**
+Untuk Device Fisik (Rekomendasi):
 ```bash
 flutter run
 ```
 
-**Untuk Device Fisik (Via USB/WiFi):**
-Pastikan USB Debugging aktif, lalu:
+Untuk Emulator Android:
 ```bash
-flutter run -d <device_id>
+# Jika pakai emulator, config.dart harusnya: 'http://10.0.2.2:8000'
+flutter run
 ```
 
 ## 🔐 Permissions
@@ -115,4 +152,4 @@ Aplikasi ini membutuhkan akses lokasi.
 - **iOS**: `NSLocationWhenInUseUsageDescription` (sudah dikonfigurasi di Info.plist)
 
 ---
-*Dibuat oleh Tim Developer Makassar Restaurant*
+*Dibuat dengan ❤️*
